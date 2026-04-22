@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}库存管理{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card card-soft"><div class="card-body"><div class="text-muted tiny">当前物料种类</div><div class="fs-3 fw-bold">{{ total_items }}</div></div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-soft"><div class="card-body"><div class="text-muted tiny">当前库存总量</div><div class="fs-3 fw-bold">{{ total_quantity }}</div></div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-soft"><div class="card-body"><div class="text-muted tiny">低库存提醒</div><div class="fs-3 fw-bold">{{ low_stock_count }}</div></div></div>
+  </div>
+</div>
+
+<div class="card card-soft mb-4">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <h4 class="mb-0">库存列表</h4>
+      <a class="btn btn-primary" href="{{ url_for('create_item') }}">新增物料</a>
+    </div>
+    <form class="row g-2 mb-3" method="get">
+      <div class="col-md-5">
+        <input class="form-control" name="q" placeholder="搜索名称、型号、位置、备注" value="{{ keyword }}">
+      </div>
+      <div class="col-md-4">
+        <select class="form-select" name="category">
+          <option value="">全部分类</option>
+          {% for cat in categories %}
+          <option value="{{ cat }}" {% if cat == category %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3 d-grid">
+        <button class="btn btn-outline-secondary">筛选</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table align-middle table-hover">
+        <thead>
+          <tr>
+            <th>分类路径</th>
+            <th>名称</th>
+            <th>型号</th>
+            <th>库存</th>
+            <th>预警</th>
+            <th>位置</th>
+            <th>更新时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item.category_path }}</td>
+            <td>
+              <div class="fw-semibold">{{ item.name }}</div>
+              {% if item.spec %}<div class="tiny text-muted">{{ item.spec }}</div>{% endif %}
+            </td>
+            <td>{{ item.model or '-' }}</td>
+            <td>
+              <span class="fw-semibold {% if item.quantity <= item.min_quantity %}text-danger{% endif %}">{{ item.quantity }} {{ item.unit }}</span>
+            </td>
+            <td>{{ item.min_quantity }} {{ item.unit }}</td>
+            <td>{{ item.location or '-' }}</td>
+            <td class="tiny">{{ item.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+              <div class="d-flex gap-2 flex-wrap">
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_item', item_id=item.id) }}">编辑</a>
+                <a class="btn btn-sm btn-outline-success" href="{{ url_for('move_item', item_id=item.id) }}">出入库</a>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8" class="text-center text-muted py-4">暂无数据</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

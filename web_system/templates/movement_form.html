@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}出入库{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <h4 class="mb-1">库存操作</h4>
+        <div class="text-muted tiny mb-3">当前物料：{{ item.name }} {% if item.model %} / {{ item.model }}{% endif %}，现有库存 {{ item.quantity }} {{ item.unit }}</div>
+        <form method="post" class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">操作类型</label>
+            <select class="form-select" name="tx_type">
+              <option value="OUT">领用</option>
+              <option value="IN">入库</option>
+              <option value="ADJUST">调整为指定库存</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">数量</label>
+            <input class="form-control" name="quantity" type="number" min="1" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">操作人</label>
+            <input class="form-control" value="{{ current_user.display_name }}" disabled>
+          </div>
+          <div class="col-12">
+            <label class="form-label">用途</label>
+            <input class="form-control" name="purpose" placeholder="例如：项目调试、焊接实验、课程设计">
+          </div>
+          <div class="col-12">
+            <label class="form-label">备注</label>
+            <textarea class="form-control" name="remark" rows="3"></textarea>
+          </div>
+          <div class="col-12 d-flex gap-2">
+            <button class="btn btn-primary">提交</button>
+            <a class="btn btn-outline-secondary" href="{{ url_for('items') }}">返回</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
